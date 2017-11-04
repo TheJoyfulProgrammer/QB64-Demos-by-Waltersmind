@@ -1,0 +1,17 @@
+SUB SUB_CenterWindow (CurrentWindow AS _UNSIGNED LONG)
+
+DIM DeskTop AS _UNSIGNED LONG
+DIM DT_Width AS _UNSIGNED LONG
+DIM DT_Height AS _UNSIGNED LONG
+
+DeskTop = _SCREENIMAGE ' *** Capture the Desktop image
+DT_Width = _WIDTH(DeskTop) ' *** Get the Desktop Width
+DT_Height = _HEIGHT(DeskTop) ' *** Get the Desktop Height
+
+' *** Center the SCREEN on the Desktop (Only works with the latest QB64-GL dirty build)
+_SCREENMOVE (DT_Width - _WIDTH(CurrentWindow)) / 2, (DT_Height - _HEIGHT(CurrentWindow)) / 2 - 29
+
+'_FREEIMAGE DeskTop
+
+END SUB
+

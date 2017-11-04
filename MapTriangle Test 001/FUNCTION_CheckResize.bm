@@ -1,0 +1,48 @@
+' *************************************************************************************************
+' *                                                                                               *
+' *  CheckResize: This SUB checks if the user resized the window, and if so, recreates the        *
+' *               ORIGINAL SCREEN image to the new window size.                                   *
+' *                                                                                               *
+' *               Developer Note: You must use $RESIZE:ON, $RESIZE:SMOOTH, or $RESIZE:SMOOTH at   *
+' *                               the beginning of your project for this to work.                 *
+' *                               This SUB only works in QB64-GL only.                            *
+' *                                                                                               *
+' *************************************************************************************************
+FUNCTION FUNCTION_CheckResize (CurrentScreen AS _UNSIGNED LONG)
+
+' *** Define local variable for temporary screen
+DIM TempScreen AS _UNSIGNED LONG
+DIM ReturnValue AS _UNSIGNED INTEGER
+
+ReturnValue = 0
+
+' *** Check to see if the user resized the window. If so, change the SCREEN image to the correct size.
+IF _RESIZE THEN
+
+    ' *** First, create a copy of the current SCREEN image.
+    TempScreen = _COPYIMAGE(CurrentScreen, 32)
+
+    ' *** Set the SCREEN to the copied image, releasing the current SCREEN image.
+    SCREEN TempScreen
+
+    ' *** Remove (FREE) the original SCREEN image.
+    _FREEIMAGE CurrentScreen
+
+    ' *** Create a new "original" SCREEN image.
+    CurrentScreen = _NEWIMAGE(_RESIZEWIDTH, _RESIZEHEIGHT, 32)
+
+    ' *** Set the SCREEN to the new "original" image, releasing the copied SCREEN image.
+    SCREEN CurrentScreen
+
+    ' *** Remove (FREE) the copied SCREEN image.
+    _FREEIMAGE TempScreen
+
+    ' *** Tell the current application that the screen was resized.
+    ReturnValue = -1
+
+END IF
+
+FUNCTION_CheckResize = ReturnValue
+
+END FUNCTION
+

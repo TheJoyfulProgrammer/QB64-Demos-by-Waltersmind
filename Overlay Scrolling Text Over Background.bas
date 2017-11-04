@@ -1,0 +1,101 @@
+DIM MainWindow AS LONG
+DIM Background AS LONG
+DIM TextWindow AS LONG
+
+DIM WindowWidth AS _UNSIGNED INTEGER
+DIM WindowHeight AS _UNSIGNED INTEGER
+
+DIM BoxColor AS _UNSIGNED LONG
+DIM MaxCharactersWide AS _UNSIGNED INTEGER
+DIM LineLength AS _UNSIGNED INTEGER
+DIM TextWidth AS _UNSIGNED INTEGER
+DIM Keys AS LONG
+
+WindowWidth = _DESKTOPWIDTH - 50
+WindowHeight = _DESKTOPHEIGHT - 100
+
+TextWidth = 8 ' QB64'S DEFAULT FONT WIDTH SIZE
+
+'  SEE HOW MANY CHARACTERS WE CAN PUT ON THE SCREEN, WIDTH WISE
+MaxCharactersWide = INT(WindowWidth / TextWidth) - 1
+
+MainWindow = _NEWIMAGE(WindowWidth, WindowHeight, 32)
+Background = _NEWIMAGE(WindowWidth, WindowHeight, 32)
+TextWindow = _NEWIMAGE(WindowWidth, WindowHeight, 32)
+
+'  SET SCREEN IMAGE TO MAINWINDOW
+SCREEN MainWindow
+
+'  CAUSE A SLIGHT DELAY TO MAKE SURE QB64 DOES WHAT IT NEEDS TO
+_DELAY 0.1
+
+'  CENTER THE SCREEN ON THE DESKTOP, ABOVE THE TASKBAR
+_SCREENMOVE (_DESKTOPWIDTH / 2 - _WIDTH(_SOURCE) / 2) - 9, (_DESKTOPHEIGHT / 2 - _HEIGHT(_SOURCE) / 2) - 29
+_TITLE "Overlay Scrolling Text onto Image Background. Version #1"
+
+'  SET THE DESTINATION IMAGE TO THE BACKGROUND AND DRAW SOMETHING TO IT FOR DEMO PURPOSES
+_DEST Background
+
+'  REMOVE ALL TRANSPARENCY'S
+CLS
+
+'  DRAW A BUNCH OF DIMLY LIT BOXES
+FOR i = 0 TO 200
+    BoxColor = _RGBA32(RND * 128, RND * 128, RND * 128, RND * 191 + 64)
+    LINE (RND * WindowWidth, RND * WindowHeight)-(RND * WindowWidth, RND * WindowHeight), BoxColor, BF
+NEXT
+
+'  SET THE DESTINATION IMAGE TO THE TEXT IMAGE SO WE CAN START PRINTING TO IT
+_DEST TextWindow
+CLS
+
+_PRINTMODE _KEEPBACKGROUND
+
+COLOR _RGB32(255, 255, 255)
+
+'  START OUR GAME LOOP
+DO
+
+    _LIMIT 60
+
+    _DEST Background
+
+    FOR i = 1 TO 100
+        x1 = RND * WindowWidth
+        y1 = RND * WindowHeight
+        BoxWidth = RND * 60
+        BoxHeight = BoxWidth
+
+        LINE (x1, y1)-(x1 + BoxWidth, y1 + BoxHeight), _RGBA32(RND * 64 + 8, RND * 64 + 8, RND * 64 + 8, RND * 128 + 64), BF
+    NEXT
+
+    '  DEFINE A NEW LINE LENGTH TO FILL WITH CHARACTERS
+    LineLength = RND * MaxCharactersWide
+
+    _DEST TextWindow
+
+    '  CREATE A STRING OF RANDOM CHARACATERS TO PRINT. ALL JIBBERISH OF COURSE FOR THIS DEMO
+    FOR Position% = 1 TO LineLength
+        PRINT CHR$(RND * 94 + 32);
+    NEXT
+
+    PRINT
+
+    '  SET THE BLACK BACKGROUND TO TRANSPARENT SO WE CAN SEE THE BACKGROUND
+    _SETALPHA 0, _RGB32(0, 0, 0)
+    _SETALPHA 255, _RGB32(0, 0, 0)
+
+    '  DRAW BACKGROUND IMAGE
+    _PUTIMAGE (0, 0), Background, 0
+
+    '  OVERLAY TEXT IMAGE ON TOP OF THE BACKGROUND
+    _PUTIMAGE (0, 0), TextWindow, 0
+
+    _DISPLAY
+
+    '  CHECK THE KEYBOARD TO SEE IF THE <ESC> KEY HAS BEEN PRESSED
+    Keys = _KEYHIT
+    IF Keys = 27 THEN SYSTEM
+
+LOOP
+
