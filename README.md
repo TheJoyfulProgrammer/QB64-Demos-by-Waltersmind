@@ -1,2 +1,2 @@
 # QB64-Demos-by-Waltersmind
-Here you will find demos I created in QB64.
+Here you will find some demos I created in QB64.
